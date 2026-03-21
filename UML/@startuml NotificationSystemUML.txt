@@ -1,0 +1,110 @@
+@startuml NotificationSystemUML
+!theme plain
+skinparam monochrome true
+
+' External Dependency
+package "User Management Subsystem [External]" {
+  class UserManagerFacade {
+    + isUserActive(userId: String): boolean
+    + getUserPreferences(userId: String): UserPrefs
+  }
+}
+
+' External Dependency
+package "Friends Management Subsystem [External]" {
+  class InviteManager {
+    + notifyNewInvite(inviteDetails: InviteData): void
+  }
+}
+
+package "Notification Subsystem" {
+
+  ' Main Facade for Notification System
+  class NotificationFacade {
+    - writeWorker: NotificationWriteWorker
+    + sendPushNotification(userId: String, message: String): void
+    + queueInviteNotification(inviteDetails: InviteData): void
+  }
+
+  ' Worker 1: Writes new invites to the database
+  class NotificationWriteWorker {
+    - dbProxy: NotificationDBProxy
+    + saveNewInvite(inviteDetails: InviteData): void
+  }
+
+  ' Worker 2: Reads/polls pending invites from the database
+  class NotificationReadWorker {
+    - dbProxy: NotificationDBProxy
+    - userManager: UserManagerFacade
+    + pollPendingInvites(): void
+    - processInvite(invite: InviteData): void
+    - deliverNotification(invite: InviteData): void
+  }
+
+  ' Proxy Pattern for Database Operations
+  interface NotificationRepo {
+    + insertInvite(invite: InviteData): void
+    + fetchPendingInvites(): List<InviteData>
+    + markAsSent(inviteId: String): void
+  }
+
+  class RealNotificationDB {
+    + insertInvite(invite: InviteData): void
+    + fetchPendingInvites(): List<InviteData>
+    + markAsSent(inviteId: String): void
+  }
+
+  class NotificationDBProxy {
+    - realDb: RealNotificationDB
+    + insertInvite(invite: InviteData): void
+    + fetchPendingInvites(): List<InviteData>
+    + markAsSent(inviteId: String): void
+    - routeToReadReplica(): void
+    - routeToWriteMaster(): void
+  }
+
+  class InviteData {
+    - inviteId: String
+    - fromUserId: String
+    - toUserId: String
+    - status: String
+  }
+}
+
+' Relationships
+InviteManager --> NotificationFacade : calls to send invites
+
+NotificationFacade *-- NotificationWriteWorker : delegates writes
+NotificationWriteWorker --> NotificationDBProxy : saves via proxy
+
+NotificationReadWorker --> NotificationDBProxy : reads via proxy
+NotificationReadWorker --> UserManagerFacade : verifies user status
+
+' Proxy Implementation
+NotificationRepo <|.. RealNotificationDB : implements
+NotificationRepo <|.. NotificationDBProxy : implements
+NotificationDBProxy o-- RealNotificationDB : wraps and routes queries
+
+note top of NotificationReadWorker
+  Runs on a schedule/thread.
+  1. Fetches pending invites via Proxy.
+  2. Checks UserManagerFacade if user is valid/active.
+  3. Delivers actual notification.
+  4. Marks as sent via Proxy.
+end note
+
+note top of NotificationWriteWorker
+  Receives requests from the Facade
+  and strictly handles inserting
+  new invites into the DB.
+end note
+
+note right of NotificationDBProxy
+  Proxy Pattern (Read/Write Split):
+  Intercepts DB calls. Routes 
+  fetchPendingInvites() to read replicas.
+  Routes insertInvite() to the primary
+  write database.
+end note
+
+@enduml

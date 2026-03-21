@@ -1,0 +1,79 @@
+@startuml FriendsFacadeUML
+!theme plain
+skinparam monochrome true
+
+' Client interacts only with Facade
+class Client {
+}
+
+' Simple Facade - entry point for the module
+class FriendsManagementFacade {
+  + sendFriendRequest(fromUserId: String, toUserId: String): void
+  + acceptFriendRequest(inviteId: String): void
+  + declineFriendRequest(inviteId: String): void
+  + followUser(userId: String, targetUserId: String): void
+  + unfollowUser(userId: String, targetUserId: String): void
+  + getRelationshipStatus(userId: String, targetUserId: String): FriendManagement
+  + getUserConnections(userId: String): List<FriendManagement>
+}
+
+' Only the main domain interface is exposed
+interface FriendManagement {
+  + getUserId(): String
+  + getTargetUserId(): String
+  + getStatus(): String
+  + updateStatus(newStatus: String): void
+  + getDetails(): String
+}
+
+package "Friends Management Subsystem [Hidden]" {
+  class Friend
+  class Follower
+  class Following
+  
+  interface FriendsRepo
+  class ServerDBManager
+  class FriendsRepoProxy
+  
+  class InviteManager
+}
+
+package "Notification Subsystem [External]" {
+  class NotificationFacade
+}
+
+' Relationships - Client sees only Facade -> Interface
+Client --> FriendsManagementFacade : uses simple API
+FriendsManagementFacade ..> FriendManagement : returns interface
+
+' Internal Subsystem Relationships [dotted to show hidden]
+FriendManagement <|.. Friend : implements
+FriendManagement <|.. Follower : implements
+FriendManagement <|.. Following : implements
+
+FriendsRepo <|.. ServerDBManager : implements
+FriendsRepo <|.. FriendsRepoProxy : implements
+FriendsRepoProxy o-- ServerDBManager : controls access to
+
+InviteManager --> FriendsRepo : saves state
+InviteManager --> NotificationFacade : sends notifications
+
+' Facade internally orchestrates the hidden components
+FriendsManagementFacade --> InviteManager : delegates invites
+FriendsManagementFacade --> FriendsRepoProxy : queries relationships
+
+note right of FriendsManagementFacade
+  Simplest Facade design:
+  - Client only knows this class and 
+    the FriendManagement interface.
+  - Hides Proxy DB logic, Invite
+    orchestration, and Notification
+    integration.
+end note
+
+note bottom of FriendManagement
+  THE ONLY interface client works with
+  through Facade methods
+end note
+
+@enduml

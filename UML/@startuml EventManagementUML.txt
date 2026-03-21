@@ -1,0 +1,88 @@
+@startuml EventManagementUML
+!theme plain
+
+interface EventComponent {
+  + display(): void
+  + add(event: EventComponent): void
+  + remove(event: EventComponent): void
+  + getChild(index: int): EventComponent
+}
+
+class BasicEvent {
+  - name: String
+  - description: String
+  - date: String
+  - time: String
+  - location: String
+  - type: String
+  + display(): void
+  + add(event: EventComponent): void
+  + remove(event: EventComponent): void
+  + getChild(index: int): EventComponent
+}
+
+abstract class EventDecorator implements EventComponent {
+  - decoratedEvent: EventComponent
+  + EventDecorator(event: EventComponent)
+  + display(): void
+  + add(event: EventComponent): void
+  + remove(event: EventComponent): void
+  + getChild(index: int): EventComponent
+}
+
+class NameDecorator extends EventDecorator {
+}
+
+class DescriptionDecorator extends EventDecorator {
+}
+
+class DateDecorator extends EventDecorator {
+}
+
+class TimeDecorator extends EventDecorator {
+}
+
+class LocationDecorator extends EventDecorator {
+}
+
+class TypeDecorator extends EventDecorator {
+}
+
+class CompositeEvent implements EventComponent {
+  - children: List<EventComponent>
+  + CompositeEvent()
+  + add(event: EventComponent): void
+  + remove(event: EventComponent): void
+  + display(): void
+}
+
+EventComponent <|.. BasicEvent : implements
+EventComponent <|.. EventDecorator : implements
+EventComponent <|.. CompositeEvent : implements
+EventDecorator <|-- NameDecorator : extends
+EventDecorator <|-- DescriptionDecorator : extends
+EventDecorator <|-- DateDecorator : extends
+EventDecorator <|-- TimeDecorator : extends
+EventDecorator <|-- LocationDecorator : extends
+EventDecorator <|-- TypeDecorator : extends
+
+EventDecorator o-- EventComponent : decoratedEvent
+CompositeEvent *-- "*" EventComponent : children
+
+note top of EventComponent
+  Unified interface for Decorator
+  and Composite patterns.
+  Enables nesting and decoration.
+end note
+
+note top of EventDecorator
+  Wraps any EventComponent
+  (Basic, Composite, or decorated).
+end note
+
+note top of CompositeEvent
+  Treats individual events and
+  sub-events uniformly.
+end note
+
+@enduml

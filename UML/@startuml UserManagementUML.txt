@@ -1,0 +1,121 @@
+@startuml UserManagementUML
+!theme plain
+skinparam monochrome true
+
+package "User Management Subsystem" {
+
+  ' Entry Point Singleton
+  class AppStartup <<Singleton>> {
+    - {static} instance: AppStartup
+    - AppStartup()
+    + {static} getInstance(): AppStartup
+    + startApp(): void
+    + initiateLoginFlow(): void
+  }
+
+  ' Global State Singleton
+  class CurrentApplicationUser <<Singleton>> {
+    - {static} instance: CurrentApplicationUser
+    - userId: String
+    - username: String
+    - sessionToken: String
+    - CurrentApplicationUser(userData: UserData)
+    + {static} getInstance(): CurrentApplicationUser
+    + {static} instantiateUser(userData: UserData): void
+    + clearSession(): void
+  }
+
+  ' Authentication logic
+  class UserLogin {
+    - dbProxy: UserRepo
+    - registrationFlow: UserRegistration
+    + login(username, password): void
+    + registerNewUser(): void
+    - passControlToDashboard(): void
+  }
+
+  ' Registration logic
+  class UserRegistration {
+    - dbProxy: UserRepo
+    + processRegistration(details: UserData): void
+    - passControlToDashboard(): void
+  }
+
+  ' Dashboard Entry
+  class DashboardFacade {
+    + initializeDashboard(): void
+    + loadUserModules(): void
+  }
+
+  ' Database Proxy Pattern
+  interface UserRepo {
+    + authenticateUser(user, pass): UserData
+    + registerUser(details: UserData): UserData
+  }
+
+  class ServerDBS {
+    + authenticateUser(user, pass): UserData
+    + registerUser(details: UserData): UserData
+    - executeQuery(): void
+  }
+
+  class UserDBProxy {
+    - realDBS: ServerDBS
+    + authenticateUser(user, pass): UserData
+    + registerUser(details: UserData): UserData
+    - sanitizeInputs(): void
+    - checkRateLimit(): boolean
+  }
+}
+
+' --- Relationships and Control Flow ---
+
+' Startup Flow
+AppStartup --> UserLogin : 1. starts and hands control to
+
+' Login/Registration Flow
+UserLogin --> UserDBProxy : 2a. authenticates via proxy
+UserLogin --> UserRegistration : 2b. calls for registration
+UserRegistration --> UserDBProxy : 2c. registers via proxy
+
+' DB Proxy relationships
+UserRepo <|.. ServerDBS : implements
+UserRepo <|.. UserDBProxy : implements
+UserDBProxy o-- ServerDBS : proxies calls to
+
+' State Management Flow
+UserLogin ..> CurrentApplicationUser : 3. instantiates on success
+UserRegistration ..> CurrentApplicationUser : 3. instantiates on success
+
+' Fallback Flow
+CurrentApplicationUser --> AppStartup : redirects if uninstantiated
+
+' Final Handoff
+UserLogin --> DashboardFacade : 4. gives control to
+UserRegistration --> DashboardFacade : 4. gives control to
+
+' --- Notes ---
+note top of AppStartup
+  <<Singleton>>
+  Application entry point.
+  Starts first and initializes 
+  the UserLogin class.
+end note
+
+note left of CurrentApplicationUser
+  <<Singleton>>
+  If getInstance() is called while 
+  instance is null, it aborts current 
+  execution and sends control flow 
+  back to AppStartup.startApp().
+end note
+
+note bottom of UserDBProxy
+  Proxy Pattern:
+  Intercepts database requests to
+  prevent SQL injection, manage DB 
+  connections, or rate-limit login 
+  attempts before hitting ServerDBS.
+end note
+
+@enduml

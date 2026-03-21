@@ -1,0 +1,101 @@
+@startuml FriendsSystemUML
+!theme plain
+skinparam monochrome true
+
+package "Friends Management Subsystem" {
+  
+  ' Core Domain Interface and Classes
+  interface FriendManagement {
+    + updateStatus(newStatus: String): void
+  }
+
+  class Friend {
+    - userId: String
+    - friendId: String
+    - status: String
+    - establishedDate: String
+  }
+
+  class Follower {
+    - userId: String
+    - followerId: String
+    - status: String
+  }
+
+  class Following {
+    - userId: String
+    - followingId: String
+    - status: String
+  }
+
+  ' Proxy Pattern for Database Operations
+  interface FriendsRepo {
+    + saveRelationship(rel: FriendManagement): void
+    + getRelationship(userId: String, targetId: String): FriendManagement
+    + deleteRelationship(userId: String, targetId: String): void
+  }
+
+  class ServerDBManager {
+    + saveRelationship(rel: FriendManagement): void
+    + getRelationship(userId: String, targetId: String): FriendManagement
+    + deleteRelationship(userId: String, targetId: String): void
+    - openDbConnection(): void
+  }
+
+  class FriendsRepoProxy {
+    - realDbManager: ServerDBManager
+    - cache: Map<String, FriendManagement>
+    + saveRelationship(rel: FriendManagement): void
+    + getRelationship(userId: String, targetId: String): FriendManagement
+    + deleteRelationship(userId: String, targetId: String): void
+    - checkAccessPermissions(): boolean
+    - logAuditTrail(): void
+  }
+
+  ' Invite Management System
+  class InviteManager {
+    - repository: FriendsRepo
+    - notificationFacade: NotificationFacade
+    + sendInvite(fromUser: String, toUser: String, type: String): void
+    + acceptInvite(inviteId: String): void
+    + declineInvite(inviteId: String): void
+  }
+}
+
+package "Notification Subsystem [External]" {
+  class NotificationFacade {
+    + sendPushNotification(userId: String, message: String): void
+  }
+}
+
+' Domain Implementations
+FriendManagement <|.. Friend : implements
+FriendManagement <|.. Follower : implements
+FriendManagement <|.. Following : implements
+
+' Proxy Pattern Relationships
+FriendsRepo <|.. ServerDBManager : implements (Real Subject)
+FriendsRepo <|.. FriendsRepoProxy : implements (Proxy)
+FriendsRepoProxy o-- ServerDBManager : controls access to
+
+' Invite Manager Dependencies
+InviteManager --> FriendsRepo : uses to save states
+InviteManager --> NotificationFacade : uses for invites
+InviteManager ..> FriendManagement : creates/manages
+
+note right of FriendsRepoProxy
+  Proxy Pattern:
+  Intercepts DB calls to add caching,
+  lazy initialization, or access 
+  control before hitting the actual 
+  ServerDBManager.
+end note
+
+note top of InviteManager
+  Manages the lifecycle of invites.
+  Delegates the actual sending of 
+  messages to the NotificationFacade
+  to keep systems decoupled.
+end note
+
+@enduml

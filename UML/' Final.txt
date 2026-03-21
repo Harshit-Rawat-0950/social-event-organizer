@@ -1,0 +1,242 @@
+' Final
+' Use class instead of rectangle to avoid parser confusion
+@startuml FriendsFacadeUML
+!theme plain
+skinparam monochrome true
+
+' Client interacts only with Facade
+class Client {
+}
+
+' Simple Facade - entry point for the module
+class FriendsManagementFacade {
+  + sendFriendRequest(fromUserId: String, toUserId: String): void
+  + acceptFriendRequest(inviteId: String): void
+  + declineFriendRequest(inviteId: String): void
+  + followUser(userId: String, targetUserId: String): void
+  + unfollowUser(userId: String, targetUserId: String): void
+  + getRelationshipStatus(userId: String, targetUserId: String): FriendManagement
+  + getUserConnections(userId: String): List<FriendManagement>
+}
+
+' Only the main domain interface is exposed
+interface FriendManagement {
+  + getUserId(): String
+  + getTargetUserId(): String
+  + getStatus(): String
+  + updateStatus(newStatus: String): void
+  + getDetails(): String
+}
+
+package "Friends Management Subsystem [Hidden]" {
+  class Friend
+  class Follower
+  class Following
+  
+  interface FriendsRepo
+  class ServerDBManager
+  class FriendsRepoProxy
+  
+  class InviteManager
+}
+' External Dependency
+package "User Management Subsystem [External]" {
+  class UserManagerFacade {
+    + isUserActive(userId: String): boolean
+    + getUserPreferences(userId: String): UserPrefs
+  }
+
+}
+
+' External Dependency
+package "Friends Management Subsystem [External]" {
+  class InviteManager {
+    + notifyNewInvite(inviteDetails: InviteData): void
+  }
+}
+
+package "Notification Subsystem" {
+
+  ' Main Facade for Notification System
+  class NotificationFacade {
+    - writeWorker: NotificationWriteWorker
+    + sendPushNotification(userId: String, message: String): void
+    + queueInviteNotification(inviteDetails: InviteData): void
+  }
+
+  ' Worker 1: Writes new invites to the database
+  class NotificationWriteWorker {
+    - dbProxy: NotificationDBProxy
+    + saveNewInvite(inviteDetails: InviteData): void
+  }
+
+  ' Worker 2: Reads/polls pending invites from the database
+  class NotificationReadWorker {
+    - dbProxy: NotificationDBProxy
+    - userManager: UserManagerFacade
+    + pollPendingInvites(): void
+    - processInvite(invite: InviteData): void
+    - deliverNotification(invite: InviteData): void
+  }
+
+  ' Proxy Pattern for Database Operations
+  interface NotificationRepo {
+    + insertInvite(invite: InviteData): void
+    + fetchPendingInvites(): List<InviteData>
+    + markAsSent(inviteId: String): void
+  }
+
+  class RealNotificationDB {
+    + insertInvite(invite: InviteData): void
+    + fetchPendingInvites(): List<InviteData>
+    + markAsSent(inviteId: String): void
+  }
+
+  class NotificationDBProxy {
+    - realDb: RealNotificationDB
+    + insertInvite(invite: InviteData): void
+    + fetchPendingInvites(): List<InviteData>
+    + markAsSent(inviteId: String): void
+    - routeToReadReplica(): void
+    - routeToWriteMaster(): void
+  }
+
+  class InviteData {
+    - inviteId: String
+    - fromUserId: String
+    - toUserId: String
+    - status: String
+  }
+}
+
+' Relationships
+InviteManager --> NotificationFacade : calls to send invites
+
+NotificationFacade *-- NotificationWriteWorker : delegates writes
+NotificationWriteWorker --> NotificationDBProxy : saves via proxy
+
+NotificationReadWorker --> NotificationDBProxy : reads via proxy
+NotificationReadWorker --> UserManagerFacade : verifies user status
+
+' Proxy Implementation
+NotificationRepo <|.. RealNotificationDB : implements
+NotificationRepo <|.. NotificationDBProxy : implements
+NotificationDBProxy o-- RealNotificationDB : wraps and routes queries
+
+note top of NotificationReadWorker
+  Runs on a schedule/thread.
+  1. Fetches pending invites via Proxy.
+  2. Checks UserManagerFacade if user is valid/active.
+  3. Delivers actual notification.
+  4. Marks as sent via Proxy.
+end note
+
+note top of NotificationWriteWorker
+  Receives requests from the Facade
+  and strictly handles inserting
+  new invites into the DB.
+end note
+
+note right of NotificationDBProxy
+  Proxy Pattern (Read/Write Split):
+  Intercepts DB calls. Routes 
+  fetchPendingInvites() to read replicas.
+  Routes insertInvite() to the primary
+  write database.
+end note
+
+' Relationships - Client sees only Facade -> Interface
+Client --> FriendsManagementFacade : uses simple API
+FriendsManagementFacade ..> FriendManagement : returns interface
+
+' Internal Subsystem Relationships [dotted to show hidden]
+FriendManagement <|.. Friend : implements
+FriendManagement <|.. Follower : implements
+FriendManagement <|.. Following : implements
+
+FriendsRepo <|.. ServerDBManager : implements
+FriendsRepo <|.. FriendsRepoProxy : implements
+FriendsRepoProxy o-- ServerDBManager : controls access to
+
+InviteManager --> FriendsRepo : saves state
+
+' Facade internally orchestrates the hidden components
+FriendsManagementFacade --> InviteManager : delegates invites
+FriendsManagementFacade --> FriendsRepoProxy : queries relationships
+
+note right of FriendsManagementFacade
+  Simplest Facade design:
+  - Client only knows this class and 
+    the FriendManagement interface.
+  - Hides Proxy DB logic, Invite
+    orchestration, and Notification
+    integration.
+end note
+
+note bottom of FriendManagement
+  THE ONLY interface client works with
+  through Facade methods
+end note
+
+@enduml
+
+
+' Simple Facade - only depends on main interface
+class EventManagementFacade {
+  + createBasicEvent(name, desc, date, time, loc, type): EventComponent
+  + createCompositeEvent(): EventComponent
+  + addSubEvent(parent: EventComponent, child: EventComponent): void
+  + decorateName(event: EventComponent, newName: String): EventComponent
+  + decorateLocation(event: EventComponent, newLoc: String): EventComponent
+  + displayEvent(event: EventComponent): void
+  + getEventInfo(event: EventComponent): String
+}
+
+' Only the main interface is exposed
+interface EventComponent {
+  + getName(): String
+  + getDescription(): String
+  + getDate(): String
+  + getTime(): String
+  + getLocation(): String
+  + getType(): String
+  + display(): void
+  + add(event: EventComponent): void
+  + remove(event: EventComponent): void
+  + getChild(index: int): EventComponent
+}
+
+package "Event Management Subsystem [Hidden]" {
+  class BasicEvent
+  class CompositeEvent
+  abstract class EventDecorator
+  class NameDecorator
+  class LocationDecorator
+}
+
+' Relationships - Client sees only Facade -> Interface
+Client --> EventManagementFacade : uses simple API
+EventManagementFacade ..> EventComponent : uses only interface
+
+' Internal subsystem relationships [dotted to show hidden]
+EventComponent <|.. BasicEvent : implements
+EventComponent <|.. CompositeEvent : implements
+EventComponent <|.. EventDecorator : implements
+EventDecorator <|-- NameDecorator
+EventDecorator <|-- LocationDecorator
+EventDecorator o-- EventComponent : decoratedEvent
+CompositeEvent *-- "*" EventComponent : children
+
+note right of EventManagementFacade
+  Simplest Facade design:
+  - Only depends on EventComponent interface
+  - Hides ALL concrete classes from client
+  - Client never sees BasicEvent, CompositeEvent, etc.
+end note
+
+note bottom of EventComponent
+  THE ONLY interface client works with
+  through Facade methods
+end note
+
+@enduml

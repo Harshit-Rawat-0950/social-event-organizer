@@ -1,0 +1,109 @@
+@startuml UserManagerFacadeUML
+!theme plain
+skinparam monochrome true
+
+' Client/External Systems
+class Client {
+}
+
+' The Unified Entry Point for the Subsystem
+class UserManagerFacade {
+  + startApplication(): void
+  + isUserActive(userId: String): boolean
+  + getUserPreferences(userId: String): UserPrefs
+  + getCurrentUserId(): String
+  + logout(): void
+}
+
+package "User Management Subsystem [Hidden]" {
+
+  class AppStartup <<Singleton>> {
+    - {static} instance: AppStartup
+    + {static} getInstance(): AppStartup
+    + startApp(): void
+  }
+
+  class CurrentApplicationUser <<Singleton>> {
+    - {static} instance: CurrentApplicationUser
+    - userId: String
+    + {static} getInstance(): CurrentApplicationUser
+    + {static} instantiateUser(data: UserData): void
+    + clearSession(): void
+  }
+
+  class UserLogin {
+    + login(user, pass): void
+    + registerNewUser(): void
+  }
+
+  class UserRegistration {
+    + processRegistration(details: UserData): void
+  }
+   class UserDiscovery {
+    - dbProxy: UserRepo
+    + findUsers(query: String): List<UserData>
+    - filterBlockedUsers(users: List<UserData>): List<UserData>
+  }
+  interface UserRepo {
+    + authenticateUser(user, pass): UserData
+    + registerUser(details: UserData): UserData
+  }
+
+  class ServerDBS {
+  }
+
+  class UserDBProxy {
+  }
+}
+
+package "Dashboard Subsystem [External]" {
+  class DashboardFacade {
+    + initializeDashboard(): void
+  }
+}
+
+' --- External Relationships ---
+Client --> UserManagerFacade : Uses for all user queries/actions
+
+' --- Facade to Internal Routing ---
+UserManagerFacade --> AppStartup : delegates startup
+UserManagerFacade --> CurrentApplicationUser : queries current state
+UserManagerFacade --> UserDiscovery : delegates search queries
+
+' --- Internal Subsystem Flow ---
+AppStartup --> UserLogin : 1. starts and hands control to
+
+UserDiscovery --> UserDBProxy : fetches users securely
+
+UserLogin --> UserDBProxy : 2a. authenticates via proxy
+UserLogin --> UserRegistration : 2b. calls for registration
+UserRegistration --> UserDBProxy : 2c. registers via proxy
+
+UserRepo <|.. ServerDBS : implements
+UserRepo <|.. UserDBProxy : implements
+UserDBProxy o-- ServerDBS : proxies calls to
+
+UserLogin ..> CurrentApplicationUser : 3. instantiates on success
+UserRegistration ..> CurrentApplicationUser : 3. instantiates on success
+CurrentApplicationUser --> AppStartup : redirects flow if instance is null
+
+' --- Final Handoff ---
+UserLogin --> DashboardFacade : 4. gives control to
+UserRegistration --> DashboardFacade : 4. gives control to
+
+note right of UserManagerFacade
+  Facade Pattern:
+  Other subsystems (like Notification) 
+  only interact with this Facade to check
+  user status or preferences. They never 
+  see the Singletons or Auth logic.
+end note
+
+note bottom of CurrentApplicationUser
+  Fallback Mechanism:
+  If the Facade requests user data but
+  the Singleton is null, it immediately
+  routes control to AppStartup.
+end note
+
+@enduml
