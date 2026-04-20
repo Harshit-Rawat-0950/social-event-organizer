@@ -9,4 +9,8 @@ package EventManagementSubSystem;
  **/
 public class EventMangementFacade {
 
+	public void EventCreate()
+	{
+		
+	}
 }
