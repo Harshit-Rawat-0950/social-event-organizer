@@ -39,10 +39,11 @@ class AppStartup {
         
         String mode = configLoader.getProperty("app.mode");
         String delayValue = configLoader.getProperty("app.devStartupDelayMs");
+
+        int delay = Integer.parseInt(delayValue);
         
         if ("dev".equalsIgnoreCase(mode)) {
             try {
-                int delay = Integer.parseInt(delayValue);
                 System.out.print("Development mode detected. Waiting for " + delay + " ms.");
                 for(int i =0 ; i <10; i++) {
                 	System.out.print(".");
@@ -66,7 +67,18 @@ class AppStartup {
 				if(sc.next().equals("y"))
 				{
 					UserRegistration userRegistration = new UserRegistration();
+					try {
 					userRegistration.showRegistration(userRepository);
+					}
+					catch(IOException e1){
+						if(e1.getMessage().equals("User already exists"))
+							System.out.println("User with this id already exists try again");
+							try {
+								Thread.sleep(delay);
+							} catch (InterruptedException e2) {
+								e2.printStackTrace();
+							}
+					}
 				}
 				else if(sc.next().equals("n"))
 				{

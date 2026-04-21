@@ -1,7 +1,6 @@
 package UserMangerSubSystem;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,6 +17,7 @@ public class PassWordManager {
     // Must be 16 characters for AES-128
     private static final String SECRET_KEY = "MySecretKey12345";
     private final Path passWordfilepath;
+    
     public PassWordManager(String filePath) {
         this.passWordfilepath = Paths.get(filePath);
         createFileIfNotExists();
