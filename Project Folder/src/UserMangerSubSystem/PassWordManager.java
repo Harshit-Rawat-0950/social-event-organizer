@@ -1,15 +1,41 @@
 package UserMangerSubSystem;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 public class PassWordManager {
 
 	private static final String ALGORITHM = "AES";
 
     // Must be 16 characters for AES-128
     private static final String SECRET_KEY = "MySecretKey12345";
-
+    private final Path passWordfilepath;
+    public PassWordManager(String filePath) {
+        this.passWordfilepath = Paths.get(filePath);
+        createFileIfNotExists();
+    }
+    
+    public void createFileIfNotExists() {
+        try {
+            if (passWordfilepath.getParent() != null) {
+                Files.createDirectories(passWordfilepath.getParent());
+            }
+            if (!Files.exists(passWordfilepath)) {
+                Files.createFile(passWordfilepath);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private static SecretKeySpec getKey() {
         return new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), ALGORITHM);
     }
@@ -28,9 +54,45 @@ public class PassWordManager {
         byte[] decryptedBytes = cipher.doFinal(decodedBytes);
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
-	public String getPassWord(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    
+    
+    protected String getPassWord(int id) {
+        try {
+            List<String> lines = Files.readAllLines(passWordfilepath);
+            for (String line : lines) {
+                if (!line.trim().isEmpty()) {
+                    String[] parts = line.split(",");
+                    if (Integer.parseInt(parts[0]) == id) {
+                        // The exception thrown here will be caught below
+                        return decrypt(parts[1]); 
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Handle the error (e.g., log it)
+            System.err.println("Error decrypting password: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null; // Return null or a default value if not found or if an error occurs
+    }
+    
+    protected void setPassword(int id, String s)
+    {
+    	try {
+    	String encp = encrypt(s);
+    	 try {
+             Files.write(passWordfilepath,(String.valueOf(id) + "," + encp + "\n").getBytes(),StandardOpenOption.APPEND
+             );
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+    	}
+    	 catch (Exception e) {
+             // Handle the error (e.g., log it)
+             System.err.println("Error setting password: " + e.getMessage());
+             e.printStackTrace();
+    }
+    
 
+}
 }

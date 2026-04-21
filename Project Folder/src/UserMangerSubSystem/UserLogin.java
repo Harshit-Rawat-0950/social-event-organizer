@@ -6,7 +6,7 @@ import java.util.Scanner;
 import ReportDashboardSubSystem.DashboardFacade;
 
 public class UserLogin {
-
+	private ConfigLoader configLoader;
 	public void showLogin(UserRepository Repo) throws IOException {
 		DashboardFacade.displayLoginPage();//if needed
 		Scanner sc = new Scanner(System.in);
@@ -18,7 +18,7 @@ public class UserLogin {
     		sc.close();
         	throw new IOException("User does not exists");
         }
-        PassWordManager pm = new PassWordManager();
+        PassWordManager pm = new PassWordManager(configLoader.getProperty("Files.password"));
         System.out.print("Enter password :");
         for(int i=1; i < Integer.parseInt((new ConfigLoader()).getProperty("login.maxAttempts"));i++)
         if (pm.getPassWord(id)==sc.nextLine()) {
