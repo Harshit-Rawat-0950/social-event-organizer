@@ -1,16 +1,16 @@
 package EventManagementSubSystem;
 
 public class MusicEventDecorator extends EventDecorator{
-
-	public MusicEventDecorator(EventComponent decoratedEvent) {
+	private String BandName;
+	public MusicEventDecorator(EventComponent decoratedEvent,String BandName) {
 		super(decoratedEvent);
+		this.setBandName(BandName);
 		// TODO Auto-generated constructor stub
 	}
-
-	@Override
-	public void getInvited() {
-		// TODO Auto-generated method stub
-		
+	public String getBandName() {
+		return BandName;
 	}
-
+	public void setBandName(String bandName) {
+		BandName = bandName;
+	}
 }

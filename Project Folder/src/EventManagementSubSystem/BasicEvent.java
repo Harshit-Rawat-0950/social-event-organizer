@@ -21,8 +21,6 @@ public class BasicEvent implements EventComponent {
         this.type = type;
     }
     //Constructor 
-    
-    @Override
     //Delegates to invite and notification system
     public void getInvited()
     {

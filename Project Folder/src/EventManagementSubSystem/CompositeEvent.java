@@ -38,5 +38,9 @@ public class CompositeEvent extends BasicEvent implements EventComponent {
     public EventComponent getChild(int index) {
     	return this.children.get(index);
     }
+    protected List<EventComponent> getChildren()
+    {
+    	return this.children;
+    }
 
 }

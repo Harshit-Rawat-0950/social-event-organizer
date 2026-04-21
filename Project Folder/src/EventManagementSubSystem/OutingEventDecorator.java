@@ -1,16 +1,24 @@
 package EventManagementSubSystem;
 
 public class OutingEventDecorator extends EventDecorator{
-
-	public OutingEventDecorator(EventComponent decoratedEvent) {
+	private String hotel;
+	private int starRating;
+	public OutingEventDecorator(EventComponent decoratedEvent,int starRating, String hotel) {
 		super(decoratedEvent);
+		this.setStarRating(starRating);
+		this.setHotel(hotel);
 		// TODO Auto-generated constructor stub
 	}
-
-	@Override
-	public void getInvited() {
-		// TODO Auto-generated method stub
-		
+	public int getStarRating() {
+		return starRating;
 	}
-
+	public void setStarRating(int starRating) {
+		this.starRating = starRating;
+	}
+	public String getHotel() {
+		return hotel;
+	}
+	public void setHotel(String hotel) {
+		this.hotel = hotel;
+	}
 }
