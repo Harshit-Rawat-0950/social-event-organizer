@@ -95,4 +95,37 @@ public class PassWordManager {
     
 
 }
+    protected void updatePassword(int id, String s) {
+        try {
+            List<String> lines = Files.readAllLines(passWordfilepath);
+            boolean isUpdated = false;
+
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (!line.trim().isEmpty()) {
+                    String[] parts = line.split(",");
+                    if (Integer.parseInt(parts[0]) == id) {
+                        // 1. Encrypt the new password
+                        String encryptedPassword = encrypt(s);
+                        
+                        // 2. Replace the old line with the new id and encrypted password
+                        lines.set(i, String.valueOf(id) + "," + encryptedPassword);
+                        isUpdated = true;
+                        
+                        break; // Stop searching once we've found and updated the user
+                    }
+                }
+            }
+
+            // 3. If an update occurred, overwrite the file completely with the new lines
+            if (isUpdated) {
+                Files.write(passWordfilepath, lines);
+            }
+
+        } catch (Exception e) {
+            // Handle the error (e.g., log it)
+            System.err.println("Error updating password: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
