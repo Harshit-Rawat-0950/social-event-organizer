@@ -29,28 +29,29 @@ public class InviteRepository {
     }
 
     // Appends a single Invite to the text file
-    public void saveInvite(FollowerRequest request) {
+    public void saveInvite(Invite invite) {
         try {
             // Converts the invite to a string, adds a newline, and writes it as bytes
-            Files.write(filePath, (request.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
+            Files.write(filePath, (invite.toString() + "\n").getBytes(), 
+                StandardOpenOption.APPEND);
         } catch (IOException e) {
         	
         }
     }
 
-    // Reads all lines from the text file (useful for checking expired request later)
-    public List<String> getAllRawRequest() {
-        List<String> rawRequest = new ArrayList<>();
+    // Reads all lines from the text file (useful for checking expired invites later)
+    public List<String> getAllRawInvites() {
+        List<String> rawInvites = new ArrayList<>();
         try {
             List<String> lines = Files.readAllLines(filePath);
             for (String line : lines) {
                 if (!line.trim().isEmpty()) {
-                    rawRequest.add(line);
+                    rawInvites.add(line);
                 }
             }
         } catch (IOException e) {
 
         }
-        return rawRequest;
+        return rawInvites;
     }
 }
