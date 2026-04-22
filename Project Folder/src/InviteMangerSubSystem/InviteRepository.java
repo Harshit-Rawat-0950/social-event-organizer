@@ -32,8 +32,7 @@ public class InviteRepository {
     public void saveInvite(Invite invite) {
         try {
             // Converts the invite to a string, adds a newline, and writes it as bytes
-            Files.write(filePath, (invite.toString() + "\n").getBytes(), 
-                StandardOpenOption.APPEND);
+            Files.write(filePath, (invite.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
         	
         }

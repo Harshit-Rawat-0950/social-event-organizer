@@ -16,21 +16,7 @@ import java.time.LocalDateTime;
 
 
 public class InviteManagerFacade {
-
-	private int senderId; 
-    private int receiverId;
-    private LocalDateTime expiryDate;
     
-    public InviteManagerFacade(int senderId, int receiverId){
-    	this.senderId = senderId;
-    	this.receiverId = receiverId;
-    	this.expiryDate = LocalDateTime.now().plusMonths(3);
-    }
-    
-    public String toString() {
-    	return senderId + "," + receiverId + "," + expiryDate; 
-    }
-	
 	
 	public static void getInvitedToEvent(BasicEvent basicEvent) {
 		// TODO Auto-generated method stub	
