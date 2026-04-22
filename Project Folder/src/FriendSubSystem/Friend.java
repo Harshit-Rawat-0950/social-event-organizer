@@ -1,14 +1,14 @@
 package FriendSubSystem;
 
 public class Friend implements FriendManagement{
-	String userid;
-	String friendid;
+	int userid;
+	int friendid;
 	String status;
 	int closeness;
-	public Friend(String userid, String friendid){
+	public Friend(int userid, int friendid, int c){
 		this.userid = userid;
 		this.friendid = friendid;
 		this.status = "FRIEND";
-		this.closeness = 0;
+		this.closeness = c;
 	}
 }
