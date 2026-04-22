@@ -43,16 +43,6 @@ public class ConfigLoader {
         }
     }
 
-    // Returns parsed boolean if key exists, otherwise returns defaultValue
-    public boolean getBooleanProperty(String key, boolean defaultValue) {
-        String value = properties.getProperty(key);
-
-        if (value == null || value.trim().isEmpty()) {
-            return defaultValue;
-        }
-
-        return Boolean.parseBoolean(value.trim());
-    }
 
 	public String loadConfig() {
 		// TODO Auto-generated method stub

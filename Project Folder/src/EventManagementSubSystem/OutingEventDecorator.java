@@ -3,7 +3,7 @@ package EventManagementSubSystem;
 public class OutingEventDecorator extends EventDecorator{
 	private String hotel;
 	private int starRating;
-	public OutingEventDecorator(EventComponent decoratedEvent,int starRating, String hotel) {
+	public OutingEventDecorator(EventDecorator decoratedEvent,int starRating, String hotel) {
 		super(decoratedEvent);
 		this.setStarRating(starRating);
 		this.setHotel(hotel);

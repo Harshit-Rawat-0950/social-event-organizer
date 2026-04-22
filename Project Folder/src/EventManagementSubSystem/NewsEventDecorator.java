@@ -3,7 +3,7 @@ package EventManagementSubSystem;
 public class NewsEventDecorator extends EventDecorator{
 	private String headline;
 	private String description;
-	public NewsEventDecorator(EventComponent decoratedEvent,String headline, String description) {
+	public NewsEventDecorator(EventDecorator decoratedEvent,String headline, String description) {
 		super(decoratedEvent);
 		
 		// TODO Auto-generated constructor stub
