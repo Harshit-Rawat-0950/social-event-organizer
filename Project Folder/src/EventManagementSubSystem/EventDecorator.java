@@ -1,9 +1,9 @@
 package EventManagementSubSystem;
 
 abstract class EventDecorator implements EventComponent {
-    protected EventDecorator decoratedEvent;
+    protected EventComponent decoratedEvent;
 
-    public EventDecorator(EventDecorator decoratedEvent) {
+    public EventDecorator(EventComponent decoratedEvent) {
         this.decoratedEvent = decoratedEvent;
     }
     @Override
@@ -22,6 +22,6 @@ abstract class EventDecorator implements EventComponent {
 
     @Override
     public EventComponent getChild(int index) {
-    	return null;
+        return decoratedEvent.getChild(index);
     }
 }

@@ -3,7 +3,7 @@ package EventManagementSubSystem;
 public class BusinessEventDecorator extends EventDecorator{
 	private String type;
 
-	public BusinessEventDecorator(EventDecorator decoratedEvent,String type) {
+	public BusinessEventDecorator(EventComponent decoratedEvent,String type) {
 		super(decoratedEvent);
 		this.type=type;
 		// TODO Auto-generated constructor stub

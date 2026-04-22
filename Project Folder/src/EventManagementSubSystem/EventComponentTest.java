@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-//Motive of this file is to test all EventComponent related methods 
+
 public class EventComponentTest{
 
 	
@@ -35,7 +35,6 @@ public class EventComponentTest{
 		assertEquals(((CompositeEvent)(C.getChild(1))).name,"a");
 		assertEquals(((CompositeEvent)(C.getChild(2))).name,"");
 	}
-	//Tests if we can add and remove event
 	@Test 
 	public void testCompositeEventAddAndRemoveEvent() {
 		BasicEvent evet = new BasicEvent("Mosic Night","Live mosic event","2026-03-10","19:00","MoSOC","Public");
@@ -46,13 +45,8 @@ public class EventComponentTest{
 		C.remove(evet);
 		assertEquals(C.getChildren().size(),0);
 	}
-	//Tests EventDecorators
 	@Test 
 	public void testEventDecorators() {
-//		EventDecorator Newsdeco = new NewsEventDecorator(new BasicEvent(),"Shreyas is gay","He like Kushal");
-//		EventDecorator Musicdeco = new MusicEventDecorator(Newsdeco,"Shrutiliya");
-//		assertEquals(((MusicEventDecorator)Newsdeco).getBandName(),"Shrutiliya");
-//		assertEquals(((NewsEventDecorator)Musicdeco).getHeadline(),"Shreyas is gay");
-		
+		EventDecorator deco = new NewsEventDecorator(new BasicEvent("A","B","C","D","E","F"),"Shreyas is gay","He like Kushal");
 	}
 }
