@@ -19,14 +19,14 @@ public class UserRepository {
                 Files.createFile(userFilePath);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+        	
         }
     }
 
     public void addUser(User user) {
         try {
             Files.write(userFilePath,(user.toString() + "\n").getBytes(),StandardOpenOption.APPEND
-            );
+            		);
         } catch (IOException e) {
             e.printStackTrace();
         }
