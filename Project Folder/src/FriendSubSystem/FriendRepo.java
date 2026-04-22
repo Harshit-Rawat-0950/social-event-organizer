@@ -74,22 +74,13 @@ class FriendRepo{
 		{
 			Path filePath = this.friendFilePath;
 
-	        try (Stream<String> lines = Files.lines(filePath)) {
-	            
-	            lines.forEach(line -> {
-	                // 1. Skip any accidentally blank lines
+	        try {
+	        	List<String> lines = Files.readAllLines(filePath);
+	        	for (String line : lines) {
 	                if (line.trim().isEmpty()) {
-	                    return; 
+	                    continue; 
 	                }
-
-	                // 2. Split the line at the commas
 	                String[] parts = line.split(",");
-
-	             
-	                    
-	                        // 4. Parse the strings into integers.
-	                        // Note: .trim() is highly recommended here to remove any hidden 
-	                        // spaces (e.g., if the file has "1, 2, 3" instead of "1,2,3")
 	                        int id1 = Integer.parseInt(parts[0].trim());
 	                        int id2 = Integer.parseInt(parts[1].trim());
 	                        int closeness   = Integer.parseInt(parts[2].trim());
@@ -97,8 +88,7 @@ class FriendRepo{
 	                        {
 	                        	lif.add(new Friend(id1,id2,closeness));
 	                        }
-	               
-	            });
+	            }
 	            
 	        } catch (IOException e) {
 	            System.err.println("Failed to get relationship: " + e.getMessage());
@@ -234,6 +224,17 @@ class FriendRepo{
 		List<FriendManagement> li = new ArrayList<>();
 		li.addAll(getRelationship(u, "Friend"));
 		li.addAll(getRelationship(u, "Follower"));
+		li.addAll(getRelationship(u, "Following"));
+		return li;
+	}
+	public List<FriendManagement> getallRelationship(User u, String type)
+	{
+		List<FriendManagement> li = new ArrayList<>();
+		if(type.equals("Friend"))
+		li.addAll(getRelationship(u, "Friend"));
+		if(type.equals("Follower"))
+		li.addAll(getRelationship(u, "Follower"));
+		if(type.equals("Following"))
 		li.addAll(getRelationship(u, "Following"));
 		return li;
 	}
