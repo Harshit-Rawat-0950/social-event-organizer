@@ -27,6 +27,12 @@ public class EventPage implements Page {
     	Scanner sc = new Scanner(System.in);
     	char choice = sc.next().charAt(0);
     	sc.close();
+    	String[] events = EventMangementFacade.getAllEvents();
+    	for(String event:events)
+    	{
+    		new TextElement(event, 0, true, false).display();// Style to choose
+    	}
+    	
     	switch (choice)
     	{
     	case 'c':

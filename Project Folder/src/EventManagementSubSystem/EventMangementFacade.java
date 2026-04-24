@@ -9,8 +9,19 @@ package EventManagementSubSystem;
  **/
 public class EventMangementFacade {
 
-	public void EventCreate()
-	{
+	public static void createEvent() {
 		
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void editEvent() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static String[] getAllEvents() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
