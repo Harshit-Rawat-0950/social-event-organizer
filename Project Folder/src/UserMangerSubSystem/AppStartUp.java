@@ -86,7 +86,7 @@ class AppStartup {
 				}
 				else
 				{
-					System.out.println("Its fucking yes or no how u fucking that up"); //to be removed
+					System.out.println("Its a yes or no how u messing that up"); //to be removed
 				}
 			}
 		}

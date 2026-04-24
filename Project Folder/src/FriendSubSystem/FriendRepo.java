@@ -11,11 +11,11 @@ import java.util.stream.Stream;
 
 import UserMangerSubSystem.User;
 
-class FriendRepo{
-	private final Path friendFilePath;
+public class FriendRepo{
+	private static Path friendFilePath;
 	private final Path followFilePath;
 	public FriendRepo(String friend_filePath, String follow_filePath) {
-        this.friendFilePath = Paths.get(friend_filePath);
+        friendFilePath = Paths.get(friend_filePath);
         this.followFilePath = Paths.get(follow_filePath);
         createFileIfNotExists_friend();
         createFileIfNotExists_follow();
@@ -237,5 +237,15 @@ class FriendRepo{
 		if(type.equals("Following"))
 		li.addAll(getRelationship(u, "Following"));
 		return li;
+	}
+
+	public static void createFriend(String s) {
+		try {
+			 String[] parts = s.split(",");
+            Files.write(friendFilePath,(parts[0] + "," + parts[1] + "0" + "\n").getBytes(),StandardOpenOption.APPEND
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 }

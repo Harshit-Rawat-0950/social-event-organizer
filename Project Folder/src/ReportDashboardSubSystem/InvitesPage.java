@@ -12,7 +12,7 @@ public class InvitesPage implements Page {
 
     private static InvitesPage instance;
     static List<TextElement> UIElements;
-	private InvitesPage() {
+	private InvitesPage() { 
 		ConfigLoader configLoader = new ConfigLoader();
 	    UIElements = TextElement.readFile(configLoader.getProperty("Files.invitepage"));
     }
@@ -33,7 +33,7 @@ public class InvitesPage implements Page {
 		Scanner sc = new Scanner(System.in);
 		char choice = sc.next().charAt(0);
 		sc.close();
-		// 4 Press y to accept topmost and n to reject press r to go back to mainpage
+		// 4 Press y to accept topmost and n to reject press r to go back to mainpage 
     	switch(choice)
     	{
     	case 'y':

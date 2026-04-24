@@ -47,6 +47,6 @@ public class EventComponentTest{
 	}
 	@Test 
 	public void testEventDecorators() {
-		EventDecorator deco = new NewsEventDecorator(new BasicEvent("A","B","C","D","E","F"),"Shreyas is gay","He like Kushal");
+		EventDecorator deco = new NewsEventDecorator(new BasicEvent("A","B","C","D","E","F"),"Shreyas is awesomne","He like OOP");
 	}
 }
