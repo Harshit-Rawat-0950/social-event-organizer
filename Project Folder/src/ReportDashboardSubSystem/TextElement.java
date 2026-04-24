@@ -3,12 +3,13 @@ package ReportDashboardSubSystem;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import UserMangerSubSystem.ConfigLoader;
 
-public class TextElement {
+public class TextElement implements Runnable{
 	//to be implemented
 	String Content = "";
 	int style;
@@ -26,8 +27,8 @@ public class TextElement {
 	{
 		for (TextElement text:page)
 		{
-			text.display();
-			//if(text.)
+			if(text!=null&&text.isAllowed())
+    			text.display();
 		}
 	}
 	public void stylise()
@@ -42,11 +43,12 @@ public class TextElement {
 			return false;
 		return true;
 	}
-	public List<TextElement> readFile(Path filePath)
+	public static List<TextElement> readFile(String filePath)
 	{
+		Path textFilePath = Paths.get(filePath);
 		List<TextElement> res = new ArrayList<>();
 		try {
-            List<String> lines = Files.readAllLines(filePath);
+            List<String> lines = Files.readAllLines(textFilePath);
             for (String line : lines) {
             	String[] part = line.split(",");
             	res.add(new TextElement(part[0],Integer.parseInt(part[1]),Boolean.parseBoolean(part[2]),Boolean.parseBoolean(part[3])));
@@ -55,5 +57,10 @@ public class TextElement {
             e.printStackTrace();
         }
 		return res;
+	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 }

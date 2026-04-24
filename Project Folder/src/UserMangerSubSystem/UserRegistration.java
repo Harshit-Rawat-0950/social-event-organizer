@@ -15,6 +15,7 @@ public class UserRegistration {
         int id = sc.nextInt();
         if(Repo.findUserById(id)!=null)
         {
+            sc.close();
         	throw new IOException("User already exists");
         }
         PassWordManager pm = new PassWordManager(new ConfigLoader().getProperty("Files.password"));
@@ -31,6 +32,7 @@ public class UserRegistration {
         String role = sc.nextLine();
         User u = new User(id,email,name,role,"ACTIVE");
         Repo.addUser(u);
+        sc.close();
 	}
 
 }

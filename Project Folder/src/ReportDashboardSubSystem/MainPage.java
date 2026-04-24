@@ -1,7 +1,7 @@
 package ReportDashboardSubSystem;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import UserMangerSubSystem.ConfigLoader;
 
@@ -11,7 +11,7 @@ public class MainPage implements Page{
     static List<TextElement> UIElements;
 	private MainPage() {
 		ConfigLoader configLoader = new ConfigLoader();
-	    List<TextElement> UIElements = new ArrayList<>();
+	    UIElements = TextElement.readFile(configLoader.getProperty("Files.mainpage"));
     }
 
     public static synchronized MainPage getInstance() {
@@ -20,12 +20,19 @@ public class MainPage implements Page{
         }
         return instance;
     }	
-    public void displayMainPage()
+    public void displayPage()
     {
-    	for(TextElement text:UIElements)
+    	TextElement.displayList(UIElements);
+    	Scanner sc = new Scanner(System.in);
+    	int choice = sc.nextInt();
+    	switch(choice)
     	{
-    		if(text!=null&&text.isAllowed())
-    		text.display();
+    	case 1:
+    		EventPage.getInstance().displayPage();
+    		break;
+    	case 2:
+    		InvitesPage.getInstance().displayPage();
+    		
     	}
     }
 }
