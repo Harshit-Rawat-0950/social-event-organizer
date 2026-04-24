@@ -9,19 +9,25 @@ import java.util.List;
 
 import UserMangerSubSystem.ConfigLoader;
 
-public class TextElement implements Runnable{
+public class TextElement {
 	//to be implemented
-	String Content = "";
+	String content = "";
 	int style;
-	boolean DevMode;
-	boolean NewLine;
-	public TextElement(String Content, int style, boolean Newline, boolean DevMode)
+	boolean devMode;
+	boolean newLine;
+	public TextElement(String content, int style, boolean newLine, boolean devMode)
 	{
-		
+		this.content=content;
+		this.style=style;
+		this.newLine=newLine;
+		this.devMode=devMode;
 	}
 	public void display()
 	{
+		
 		//TODO
+		if(this.newLine)
+			System.out.println();
 	}
 	public static void displayList(List<TextElement> page)
 	{
@@ -39,7 +45,7 @@ public class TextElement implements Runnable{
 		// TODO Auto-generated method stub
 		if(new ConfigLoader().getProperty("app.mode").equals("dev"))
 			return true;
-		else if(DevMode)
+		else if(devMode)
 			return false;
 		return true;
 	}
@@ -57,10 +63,5 @@ public class TextElement implements Runnable{
             e.printStackTrace();
         }
 		return res;
-	}
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
 	}
 }

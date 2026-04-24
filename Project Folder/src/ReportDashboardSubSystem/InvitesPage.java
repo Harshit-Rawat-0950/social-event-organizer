@@ -29,7 +29,10 @@ public class InvitesPage implements Page {
 		TextElement.displayList(UIElements);
 		User user = UserManagementFacade.getCurrUser();
 		String[] invites = InviteManagerFacade.getInvites(user.getId());
-    	
+    	for(String invite:invites)
+    	{
+    		new TextElement(invite, 0, true, false).display();// Style to choose
+    	}
 		Scanner sc = new Scanner(System.in);
 		char choice = sc.next().charAt(0);
 		sc.close();
