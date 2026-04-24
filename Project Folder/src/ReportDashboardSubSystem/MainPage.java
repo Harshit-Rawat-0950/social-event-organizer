@@ -25,6 +25,7 @@ public class MainPage implements Page{
     	TextElement.displayList(UIElements);
     	Scanner sc = new Scanner(System.in);
     	int choice = sc.nextInt();
+    	sc.close();
     	switch(choice)
     	{
     	case 1:
@@ -32,7 +33,18 @@ public class MainPage implements Page{
     		break;
     	case 2:
     		InvitesPage.getInstance().displayPage();
-    		
+    		break;
+    	case 3:
+    		NotificationPage.getInstance().displayPage();
+    		break;
+    	case 4:
+    		ReportPage.getInstance().displayPage();
+    		break;
+    	case 5:
+    		FriendsPage.getInstance().displayPage();
+    		break;
+    	default:
+    		MainPage.getInstance().displayPage();
     	}
     }
 }

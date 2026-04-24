@@ -23,11 +23,27 @@ public class InviteManagerFacade {
 	}
 	
 	
-	
-	public void processFriendRequest(int senderId, int receiverId) {
-		
-		
+
+	public static String[] getInvites(int id) {
+		return null;
+		// TODO Auto-generated method stub
 		
 	}
+
+
+
+	public static void acceptInvite(String invites) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public static void rejectInvite(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 }
