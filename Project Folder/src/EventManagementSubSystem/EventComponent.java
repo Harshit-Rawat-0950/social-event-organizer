@@ -1,6 +1,6 @@
 package EventManagementSubSystem;
 
-interface EventComponent {
+public interface EventComponent {
     void display();
     void add(EventComponent event);
     void remove(EventComponent event);

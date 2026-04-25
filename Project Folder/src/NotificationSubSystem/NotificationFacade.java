@@ -10,4 +10,9 @@ package NotificationSubSystem;
 
 public class NotificationFacade {
 
+	public static Object getNotifications(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
