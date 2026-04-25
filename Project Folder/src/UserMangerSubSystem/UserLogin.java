@@ -14,10 +14,9 @@ public class UserLogin {
 	    System.out.println("===== User Login =====");
 	    System.out.print("Enter id: ");
 	    int id = sc.nextInt();
-
-	   User currentUser = Repo.findUserById(id); 
+	    sc.nextLine();
+	    User currentUser = Repo.findUserById(id); 
 	    if (currentUser == null) {
-	        sc.close();
 	        throw new IOException("User does not exist");
 	    }
 
@@ -28,11 +27,9 @@ public class UserLogin {
 	    for (int i = 1; i <= maxAttempts; i++) {
 	        System.out.print("Enter password : ");
 	        String password = sc.nextLine();
-
 	        if (pm.getPassWord(id).equals(password)) {
 	            System.out.println("Login successful!");
-	            System.out.println("Welcome, " + currentUser.getName()); 
-	            sc.close();
+	            System.out.println("Welcome, " + currentUser.getName());
 	            try {
 	                Thread.sleep(Integer.parseInt((new ConfigLoader()).getProperty("app.delay=500")));
 	            } catch (NumberFormatException | InterruptedException e) {

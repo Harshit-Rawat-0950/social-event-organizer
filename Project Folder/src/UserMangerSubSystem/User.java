@@ -22,7 +22,7 @@ public class User {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.role = role;
+        this.role = role;  
         this.status = status;
     }
 
