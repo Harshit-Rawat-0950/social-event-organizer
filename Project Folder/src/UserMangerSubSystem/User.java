@@ -1,5 +1,16 @@
 package UserMangerSubSystem;
 
+import com.sun.nio.sctp.Notification;
+
+import EventManagementSubSystem.EventComponent;
+import EventManagementSubSystem.EventComponentTest;
+import FriendSubSystem.FriendManagement;
+import FriendSubSystem.FriendRepo;
+import InviteMangerSubSystem.Invite;
+import InviteMangerSubSystem.InviteManagerFacade;
+import NotificationSubSystem.NotificationFacade;
+import NotificationSubSystem.NotificationRepo;
+
 public class User {
     private int id;
     private String name;
@@ -34,5 +45,17 @@ public class User {
     public static User fromString(String line) {
         String[] parts = line.split(",");
         return new User(Integer.parseInt(parts[0]),parts[1],parts[2],parts[3],parts[4]);
+    }
+    class UserData{
+    	public FriendManagement friends[];
+    	public Notification notification[];
+    	public Invite invite[];
+    	public EventComponent CreatedEvents[];
+    	private UserData(user u)
+    	{
+    		this.invite = Invite.toInvite(InviteManagerFacade.getInvites(id));
+    		this.notification = Notification.toNotification(NotificationFacade.getNotifications(id));
+    		this.friends = FriendManagement.toFriend(FriendRepo.getallRelationship(u));
+    	}
     }
 }

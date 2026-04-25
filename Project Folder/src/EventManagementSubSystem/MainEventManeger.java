@@ -19,6 +19,6 @@ public class MainEventManeger {
 		String location = sc.nextLine();
 		System.out.println("Enter type:");
 		String type = sc.nextLine();
-		
 	}
+	
 }

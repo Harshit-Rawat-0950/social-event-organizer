@@ -13,4 +13,10 @@ public class Follower implements FriendManagement {
 		this.status = "FOLLOWER";
 		establishedDateTime = LocalDateTime.now();
 	}
+	public Follower(int userid, int followerid, LocalDateTime establishedDateTime){
+		this.userid = userid;
+		this.followerid = followerid; 
+		this.status = "FOLLOWER";
+		this.establishedDateTime = establishedDateTime;
+	}
 }
