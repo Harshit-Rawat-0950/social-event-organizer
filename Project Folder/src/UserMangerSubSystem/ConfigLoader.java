@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigLoader {
-
+ 
     private final Properties properties;
 
     public ConfigLoader() {
         properties = new Properties();
 
-        try (FileInputStream fis = new FileInputStream("config.properties")) {
+        try (FileInputStream fis = new FileInputStream("src/UserMangerSubSystem/configData.properties")) {
             properties.load(fis);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load config.properties", e);
+            throw new RuntimeException("Failed to load configData.properties", e);
         }
     }
 

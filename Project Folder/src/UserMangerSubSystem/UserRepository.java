@@ -7,7 +7,7 @@ public class UserRepository {
 
     public UserRepository(String filePath) {
         this.userFilePath = Paths.get(filePath);
-        createFileIfNotExists();
+        createFileIfNotExists();  
     }
 
     public void createFileIfNotExists() {

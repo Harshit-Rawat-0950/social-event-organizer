@@ -11,15 +11,16 @@ public class UserRegistration {
 		DashboardFacade.displayLoginPage();//if needed
 		Scanner sc = new Scanner(System.in);
 		System.out.println("===== User Registration =====");
-        System.out.print("Enter id: ");
+        System.out.print("Enter id: ");  
         int id = sc.nextInt();
+        sc.nextLine();
         if(Repo.findUserById(id)!=null)
         {
             sc.close();
         	throw new IOException("User already exists");
         }
         PassWordManager pm = new PassWordManager(new ConfigLoader().getProperty("Files.password"));
-        System.out.print("Enter password :");
+        System.out.print("Enter password : ");
         String ps = sc.nextLine();
         pm.setPassword(id,ps);
 
@@ -32,7 +33,18 @@ public class UserRegistration {
         String role = sc.nextLine();
         User u = new User(id,email,name,role,"ACTIVE");
         Repo.addUser(u);
+        System.out.print("User Registration Successful :) :)");
         sc.close();
 	}
-
+	/*public static void main(String[] args)
+	{
+		UserRegistration ureg = new UserRegistration();
+		UserRepository ur = new UserRepository(new ConfigLoader().getProperty("Files.users"));
+		try {
+			ureg.showRegistration(ur);
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+	}*/
 }

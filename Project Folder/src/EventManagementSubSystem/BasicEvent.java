@@ -22,11 +22,7 @@ public class BasicEvent implements EventComponent {
     }
     //Constructor 
     //Delegates to invite and notification system
-    public void getInvited()
-    {
-    	InviteManagerFacade.getInvitedToEvent(this);
-    	
-    }
+
 	@Override
 	public void display() {
     	DashboardFacade.displayEvent(this);

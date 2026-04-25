@@ -19,7 +19,7 @@ public class PassWordManager {
     
     public PassWordManager(String filePath) {
         this.passWordfilepath = Paths.get(filePath);
-        createFileIfNotExists();
+        createFileIfNotExists(); 
     }
     
     public void createFileIfNotExists() {
