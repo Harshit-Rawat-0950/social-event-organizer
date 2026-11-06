@@ -1,18 +1,17 @@
 package ReportDashboardSubSystem;
 
 import java.util.List;
-import java.util.Scanner;
 
 import InviteMangerSubSystem.InviteManagerFacade;
+import ReportDashboardSubSystem.Theme.Role;
 import UserMangerSubSystem.ConfigLoader;
-import UserMangerSubSystem.User;
 import UserMangerSubSystem.UserManagementFacade;
 
 public class InvitesPage implements Page {
 
     private static InvitesPage instance;
     static List<TextElement> UIElements;
-	private InvitesPage() { 
+	private InvitesPage() {
 		ConfigLoader configLoader = new ConfigLoader();
 	    UIElements = TextElement.readFile(configLoader.getProperty("Files.invitepage"));
     }
@@ -26,31 +25,44 @@ public class InvitesPage implements Page {
 
 	@Override
 	public void displayPage() {
-		TextElement.displayList(UIElements);
-		User user = UserManagementFacade.getCurrUser();
-		String[] invites = InviteManagerFacade.getInvites(user.getId());
-    	for(String invite:invites)
-    	{
-    		new TextElement(invite, 0, true, false).display();// Style to choose
-    	}
-		Scanner sc = new Scanner(System.in);
-		char choice = sc.next().charAt(0);
-		sc.close();
-		// 4 Press y to accept topmost and n to reject press r to go back to mainpage 
-    	switch(choice)
-    	{
-    	case 'y':
-    		InviteManagerFacade.acceptInvite(invites[0]);
-    		break;
-    	case 'n':
-    		InviteManagerFacade.rejectInvite(invites[0]);
-    		break;
-    	case 'r':
-    		MainPage.getInstance().displayPage();
-    		break;
-    	default: 
-    		InvitesPage.getInstance().displayPage();
-    	}
-	}	
+		while(true)
+		{
+			Screen.open("Invites", UIElements);
+			String[] invites = InviteManagerFacade.getInvites(UserManagementFacade.getCurrUser().getId());
+			if(invites.length == 0)
+				Screen.empty("(no pending invites)");
+			for(int i = 0; i < invites.length; i++)
+			{
+				String title = i == 0 ? Style.bold(Role.ACCENT, Glyph.PROMPT + " Answering this one") : Style.color(Role.MUTED, "Next");
+				Screen.println(Widgets.box(title, null, Style.wrap(InviteManagerFacade.describeInvite(invites[i]), Widgets.innerWidth()), i == 0 ? Role.ACCENT : Role.MUTED));
+			}
+			Screen.menu(UIElements);
+			char choice = ConsoleInput.getInstance().readChoice("> ");
+			if(choice == 'r')
+				return;
+			if(choice != 'y' && choice != 'n' && choice != 'm') {
+				Screen.error("Please choose one of the options listed.");
+				continue;
+			}
+			if(invites.length == 0) {
+				Screen.error("There are no invites to answer.");
+				continue;
+			}
+			try {
+				if(choice == 'y') {
+					InviteManagerFacade.acceptInvite(invites[0]);
+					Screen.success("Invite accepted.");
+				} else if(choice == 'n') {
+					InviteManagerFacade.rejectInvite(invites[0]);
+					Screen.success("Invite declined.");
+				} else {
+					InviteManagerFacade.maybeInvite(invites[0]);
+					Screen.success("Marked as maybe. You can still answer later.");
+				}
+			} catch (IllegalArgumentException e) {
+				Screen.error(e.getMessage());
+			}
+		}
+	}
 
 }

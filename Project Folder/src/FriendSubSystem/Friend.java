@@ -11,4 +11,16 @@ public class Friend implements FriendManagement{
 		this.status = "FRIEND";
 		this.closeness = c;
 	}
+	@Override
+	public int getUserId() { return userid; }
+	@Override
+	public int getTargetUserId() { return friendid; }
+	@Override
+	public String getStatus() { return status; }
+	@Override
+	public void updateStatus(String newStatus) { this.status = newStatus; }
+	@Override
+	public String getDetails() {
+		return userid + " and " + friendid + " are friends, closeness " + closeness;
+	}
 }

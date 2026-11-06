@@ -7,7 +7,6 @@ public class OutingEventDecorator extends EventDecorator{
 		super(decoratedEvent);
 		this.setStarRating(starRating);
 		this.setHotel(hotel);
-		// TODO Auto-generated constructor stub
 	}
 	public int getStarRating() {
 		return starRating;
@@ -20,5 +19,14 @@ public class OutingEventDecorator extends EventDecorator{
 	}
 	public void setHotel(String hotel) {
 		this.hotel = hotel;
+	}
+	@Override
+	protected String getDecoration() {
+		return "Outing: " + hotel + " - " + starRating + " star";
+	}
+
+	@Override
+	protected EventView.Tag getTag() {
+		return new EventView.Tag(EventView.TagKind.OUTING, getDecoration(), hotel, starRating);
 	}
 }

@@ -1,0 +1,3 @@
+Events,1,true,false
+(c) create  (s) add sub-event  (d) decorate  (e) edit  (x) cancel,3,true,false
+(i) invite  (v) responses  (a) upcoming/all  (m) mine  (r) back,3,true,false

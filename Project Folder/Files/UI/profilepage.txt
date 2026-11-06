@@ -1,0 +1,2 @@
+Profile,1,true,false
+(n) change name  (e) change email  (p) change password  (r) back,3,true,false

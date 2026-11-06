@@ -1,40 +1,38 @@
 package UserMangerSubSystem;
 
 import java.io.IOException;
-import java.util.Scanner;
 
+import ReportDashboardSubSystem.ConsoleInput;
 import ReportDashboardSubSystem.DashboardFacade;
 
 public class UserRegistration {
 
 	public void showRegistration(UserRepository Repo) throws IOException {
 		DashboardFacade.displayLoginPage();//if needed
-		Scanner sc = new Scanner(System.in);
-		System.out.println("===== User Registration =====");
-        System.out.print("Enter id: ");  
-        int id = sc.nextInt();
-        sc.nextLine();
+		ConsoleInput in = ConsoleInput.getInstance();
+		DashboardFacade.displayHeading("User Registration");
+        int id = in.readInt("Enter id: ");
+        if(id <= 0)
+        {
+        	throw new IOException("User id must be a positive number");
+        }
         if(Repo.findUserById(id)!=null)
         {
         	throw new IOException("User already exists");
         }
-        PassWordManager pm = new PassWordManager(new ConfigLoader().getProperty("Files.password"));
-        System.out.print("Enter password : ");
-        String ps = sc.nextLine();
-        pm.setPassword(id,ps);
+        String ps = in.readPassword("Enter password : ");
 
-        System.out.println("Enter User information");
-        System.out.print("Enter email: ");
-        String email = sc.nextLine();
-        System.out.print("Enter name: ");
-        String name = sc.nextLine();
-        System.out.print("Enter role: ");
-        String role = sc.nextLine();
-        User u = new User(id,email,name,role,"ACTIVE");
+        DashboardFacade.showInfo("Enter User information");
+        String email = in.readField("Enter email: ");
+        String name = in.readField("Enter name: ");
+        String role = in.readField("Enter role: ");
+        PassWordManager pm = new PassWordManager(new ConfigLoader().getProperty("Files.password"));
+        pm.setPassword(id,ps);
+        User u = new User(id,name,email,role,"ACTIVE");
         Repo.addUser(u);
-        System.out.println("User Registration Successful :) :)");
+        DashboardFacade.showSuccess("User Registration Successful :) :)");
 	}
-	
+
 	public static void main(String[] args)
 	{
 		UserRegistration ureg = new UserRegistration();
@@ -42,7 +40,7 @@ public class UserRegistration {
 		try {
 			ureg.showRegistration(ur);
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 	}

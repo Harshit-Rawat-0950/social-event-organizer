@@ -1,15 +1,16 @@
 package UserMangerSubSystem;
 
-import com.sun.nio.sctp.Notification;
+import java.util.ArrayList;
+import java.util.List;
 
 import EventManagementSubSystem.EventComponent;
-import EventManagementSubSystem.EventComponentTest;
+import EventManagementSubSystem.EventMangementFacade;
+import FriendSubSystem.FriendFacade;
 import FriendSubSystem.FriendManagement;
-import FriendSubSystem.FriendRepo;
 import InviteMangerSubSystem.Invite;
 import InviteMangerSubSystem.InviteManagerFacade;
+import NotificationSubSystem.Notification;
 import NotificationSubSystem.NotificationFacade;
-import NotificationSubSystem.NotificationRepo;
 
 public class User {
     private int id;
@@ -22,12 +23,12 @@ public class User {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.role = role;  
+        this.role = role;
         this.status = status;
     }
 
     public int getId() { return id; }
-    public String getName() { return name; }  
+    public String getName() { return name; }
     public String getEmail() { return email; }
     public String getRole() { return role; }
     public String getStatus() { return status; }
@@ -46,16 +47,24 @@ public class User {
         String[] parts = line.split(",");
         return new User(Integer.parseInt(parts[0]),parts[1],parts[2],parts[3],parts[4]);
     }
-    class UserData{
-    	public FriendManagement friends[];
-    	public Notification notification[];
-    	public Invite invite[];
-    	public EventComponent CreatedEvents[];
-    	private UserData(user u)
+    // Snapshot of everything linked to a user, taken when they log in
+    public static class UserData{
+    	List<FriendManagement> friend;
+    	List<EventComponent> createdEvents;
+    	List<Invite> invites;
+    	List<Notification> notification;
+    	public UserData(User u)
     	{
-    		this.invite = Invite.toInvite(InviteManagerFacade.getInvites(id));
-    		this.notification = Notification.toNotification(NotificationFacade.getNotifications(id));
-    		this.friends = FriendManagement.toFriend(FriendRepo.getallRelationship(u));
+    		this.friend = FriendFacade.getUserConnections(u.getId());
+    		this.createdEvents = EventMangementFacade.getEventsCreatedBy(u.getId());
+    		this.invites = new ArrayList<>();
+    		for(String invite : InviteManagerFacade.getInvites(u.getId()))
+    			this.invites.add(Invite.fromString(invite));
+    		this.notification = NotificationFacade.getNotifications(u.getId());
     	}
+    	public List<FriendManagement> getFriends() { return friend; }
+    	public List<EventComponent> getCreatedEvents() { return createdEvents; }
+    	public List<Invite> getInvites() { return invites; }
+    	public List<Notification> getNotifications() { return notification; }
     }
 }

@@ -3,9 +3,11 @@ package EventManagementSubSystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ReportDashboardSubSystem.DashboardFacade;
+
 public class CompositeEvent extends BasicEvent implements EventComponent {
     private List<EventComponent> children = new ArrayList<>();
-    
+
     public CompositeEvent(List<EventComponent> children) {
     	super("","","","","","");
         this.children = children;
@@ -24,7 +26,7 @@ public class CompositeEvent extends BasicEvent implements EventComponent {
 
 
     /* Remove the given child event/sub-event from the children list.
-     * 
+     *
      */
     @Override
     public void remove(EventComponent event) {
@@ -43,4 +45,32 @@ public class CompositeEvent extends BasicEvent implements EventComponent {
     	return this.children;
     }
 
+    @Override
+    public void display() {
+    	DashboardFacade.displayEvent(this);
+    }
+
+    // Own details followed by every sub-event, indented one level per nesting
+    @Override
+    public String getDetails() {
+    	StringBuilder details = new StringBuilder(super.getDetails());
+    	for(EventComponent child : this.children) {
+    		details.append("\n    ").append(child.getDetails().replace("\n", "\n    "));
+    	}
+    	return details.toString();
+    }
+
+    @Override
+    public EventView describe() {
+    	EventView view = super.describe();
+    	for(EventComponent child : this.children) {
+    		view.children.add(child.describe());
+    	}
+    	return view;
+    }
+
+    @Override
+    protected String getKind() {
+    	return "COMPOSITE";
+    }
 }

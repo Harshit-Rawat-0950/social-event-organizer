@@ -93,12 +93,7 @@ public class UserRepository {
     }
 
 	public String getUserData() {
-		// TODO Auto-generated method stub
-		return null;
+		return countUsers() + " registered users";
 	}
 
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

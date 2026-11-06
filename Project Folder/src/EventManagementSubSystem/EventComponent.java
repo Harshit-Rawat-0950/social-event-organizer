@@ -5,4 +5,7 @@ public interface EventComponent {
     void add(EventComponent event);
     void remove(EventComponent event);
     EventComponent getChild(int index);
+    String getDetails();
+    EventView describe();
+    void getInvited();
 }

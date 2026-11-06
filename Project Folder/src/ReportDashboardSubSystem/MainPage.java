@@ -1,9 +1,13 @@
 package ReportDashboardSubSystem;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
+import InviteMangerSubSystem.InviteManagerFacade;
+import NotificationSubSystem.NotificationFacade;
+import ReportDashboardSubSystem.Theme.Role;
 import UserMangerSubSystem.ConfigLoader;
+import UserMangerSubSystem.UserManagementFacade;
 
 public class MainPage implements Page{
 
@@ -19,32 +23,63 @@ public class MainPage implements Page{
             instance = new MainPage();
         }
         return instance;
-    }	
+    }
+    // Returns when the user logs out. Each page returns here when the user goes back.
     public void displayPage()
     {
-    	TextElement.displayList(UIElements);
-    	Scanner sc = new Scanner(System.in);
-    	int choice = sc.nextInt();
-    	sc.close();
-    	switch(choice)
+    	while(true)
     	{
-    	case 1:
-    		EventPage.getInstance().displayPage();
-    		break;
-    	case 2:
-    		InvitesPage.getInstance().displayPage();
-    		break;
-    	case 3:
-    		NotificationPage.getInstance().displayPage();
-    		break;
-    	case 4:
-    		ReportPage.getInstance().displayPage();
-    		break;
-    	case 5:
-    		FriendsPage.getInstance().displayPage();
-    		break;
-    	default:
-    		MainPage.getInstance().displayPage();
+    		Screen.open("", UIElements);
+    		Screen.println(menuBox());
+    		int choice = ConsoleInput.getInstance().readInt("> ");
+    		switch(choice)
+    		{
+    		case 0:
+    			return;
+    		case 1:
+    			EventPage.getInstance().displayPage();
+    			break;
+    		case 2:
+    			InvitesPage.getInstance().displayPage();
+    			break;
+    		case 3:
+    			NotificationPage.getInstance().displayPage();
+    			break;
+    		case 4:
+    			ReportPage.getInstance().displayPage();
+    			break;
+    		case 5:
+    			FriendsPage.getInstance().displayPage();
+    			break;
+    		case 6:
+    			ProfilePage.getInstance().displayPage();
+    			break;
+    		default:
+    			Screen.error("Please choose one of the options listed.");
+    		}
     	}
+    }
+
+    // The menu rows with live counts filled in for {invites} and {notifications}
+    private List<String> menuBox()
+    {
+    	int userId = UserManagementFacade.getCurrUser().getId();
+    	String invites = count(InviteManagerFacade.getInvites(userId).length, "pending");
+    	String notifications = count(NotificationFacade.getNotifications(userId).size(), "new");
+    	List<String> rows = new ArrayList<>();
+    	for(TextElement element : UIElements.subList(1, UIElements.size()))
+    	{
+    		if(element.isAllowed())
+    		{
+    			String text = element.getContent().replace("{invites}", invites).replace("{notifications}", notifications);
+    			rows.add(element.withContent(text).stylise());
+    		}
+    	}
+    	return Widgets.box(null, null, rows, Role.FRAME);
+    }
+
+    private static String count(int value, String word)
+    {
+    	return value == 0 ? "" : Glyph.BULLET + " " + value + " " + word;
     }
 }

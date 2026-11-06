@@ -6,12 +6,6 @@ public class BusinessEventDecorator extends EventDecorator{
 	public BusinessEventDecorator(EventComponent decoratedEvent,String type) {
 		super(decoratedEvent);
 		this.type=type;
-		// TODO Auto-generated constructor stub
-	}
-
-	public void getInvited() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public String getType() {
@@ -22,4 +16,13 @@ public class BusinessEventDecorator extends EventDecorator{
 		this.type = type;
 	}
 
+	@Override
+	protected String getDecoration() {
+		return "Business: " + type;
+	}
+
+	@Override
+	protected EventView.Tag getTag() {
+		return new EventView.Tag(EventView.TagKind.BUSINESS, getDecoration(), type, 0);
+	}
 }

@@ -77,6 +77,10 @@ public class PassWordManager {
     
     protected void setPassword(int id, String s)
     {
+    	if (getPassWord(id) != null) {
+    		updatePassword(id, s);
+    		return;
+    	}
     	try {
     	String encp = encrypt(s);
     	 try {

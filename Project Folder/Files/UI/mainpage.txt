@@ -1,0 +1,8 @@
+Main Menu,1,true,false
+1. Events,3,true,false
+2. Invites  {invites},3,true,false
+3. Notifications  {notifications},3,true,false
+4. Reports,3,true,false
+5. Friends,3,true,false
+6. Profile,3,true,false
+0. Log out,3,true,false

@@ -1,5 +1,6 @@
-10,gos.bits,Shreyas,Logs-Ops head,ACTIVE
-20,harshit@bits.com,Harshit,Chief,ACTIVE
-21,shreyas@bits.com,Shreyas,Contributor,ACTIVE
-30,mridul@bits,Mridul,Sleep Ensurer,ACTIVE
-23,ishan@bis,Ishan,No-role,ACTIVE
+10,Shreyas,gos.bits,Logs-Ops head,ACTIVE
+20,Harshit,harshit@bits.com,Chief,ACTIVE
+21,Shreyas,shreyas@bits.com,Contributor,ACTIVE
+30,Mridul,mridul@bits,Sleep Ensurer,ACTIVE
+23,Ishan,ishan@bis,No-role,ACTIVE
+101,Harhat,asdf@asdf.com,Admin,ACTIVE

@@ -1,49 +1,47 @@
 package UserMangerSubSystem;
 
 import java.io.IOException;
-import java.util.Scanner;
 
+import ReportDashboardSubSystem.ConsoleInput;
 import ReportDashboardSubSystem.DashboardFacade;
 
 public class UserLogin {
-	
+
 	public void showLogin(UserRepository Repo) throws IOException {
 	    DashboardFacade.displayLoginPage(); //if needed
-	    Scanner sc = new Scanner(System.in);
-	    
-	    System.out.println("===== User Login =====");
-	    System.out.print("Enter id: ");
-	    int id = sc.nextInt();
-	    sc.nextLine();
-	    User currentUser = Repo.findUserById(id); 
+	    ConsoleInput in = ConsoleInput.getInstance();
+
+	    DashboardFacade.displayHeading("User Login");
+	    int id = in.readInt("Enter id (0 to exit): ");
+	    if (id == 0) {
+	        throw new IOException("Exit requested");
+	    }
+	    User currentUser = Repo.findUserById(id);
 	    if (currentUser == null) {
 	        throw new IOException("User does not exist");
 	    }
 
 	    PassWordManager pm = new PassWordManager(new ConfigLoader().getProperty("Files.password"));
-	    int maxAttempts = Integer.parseInt((new ConfigLoader()).getProperty("login.maxAttempts"));
+	    int maxAttempts = new ConfigLoader().getIntProperty("login.maxAttempts", 3);
 
-	   
+
 	    for (int i = 1; i <= maxAttempts; i++) {
-	        System.out.print("Enter password : ");
-	        String password = sc.nextLine();
-	        if (pm.getPassWord(id).equals(password)) {
-	            System.out.println("Login successful!");
-	            System.out.println("Welcome, " + currentUser.getName());
+	        String password = in.readSecret("Enter password : ");
+	        if (password.equals(pm.getPassWord(id))) {
+	            DashboardFacade.showSuccess("Login successful! Welcome, " + currentUser.getName());
 	            try {
-	                Thread.sleep(Integer.parseInt((new ConfigLoader()).getProperty("app.delay=500")));
-	            } catch (NumberFormatException | InterruptedException e) {
+	                Thread.sleep(new ConfigLoader().getIntProperty("app.delay", 500));
+	            } catch (InterruptedException e) {
+	                Thread.currentThread().interrupt();
 	            }
-	            
-	            DashboardFacade.loadMainPage();
-	            return; 
+	            CurrentApplicationUser.getInstance().login(currentUser);
+	            return;
 	          } else {
-	            System.out.println("Invalid login details. Attempts remaining: " + (maxAttempts - i));
+	            DashboardFacade.showError("Invalid login details. Attempts remaining: " + (maxAttempts - i));
 	        }
 	    }
-        sc.close();
 	    throw new IOException("Too many attempts");
-	}   
+	}
 	public static void main(String[] args)
 	{
 		UserLogin ul = new UserLogin();
@@ -51,7 +49,7 @@ public class UserLogin {
 		try {
 			ul.showLogin(ur);
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 	}

@@ -6,7 +6,6 @@ public class UrgentEventDecorator extends EventDecorator{
 	public UrgentEventDecorator(EventComponent decoratedEvent,int UrgencyLevel) {
 		super(decoratedEvent);
 		this.setUrgencyLevel(UrgencyLevel);
-		// TODO Auto-generated constructor stub
 	}
 
 	public int getUrgencyLevel() {
@@ -17,4 +16,13 @@ public class UrgentEventDecorator extends EventDecorator{
 		UrgencyLevel = urgencyLevel;
 	}
 
+	@Override
+	protected String getDecoration() {
+		return "Urgency: " + UrgencyLevel + "/5";
+	}
+
+	@Override
+	protected EventView.Tag getTag() {
+		return new EventView.Tag(EventView.TagKind.URGENT, getDecoration(), "", UrgencyLevel);
+	}
 }

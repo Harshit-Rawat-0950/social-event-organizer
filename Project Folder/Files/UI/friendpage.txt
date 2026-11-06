@@ -1,0 +1,2 @@
+Friends,1,true,false
+(s) search users  (a) add friend  (d) remove friend  (f) follow  (u) unfollow  (r) back,3,true,false
